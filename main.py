@@ -6,7 +6,7 @@ import colors
 pygame.init()
 screen = pygame.display.set_mode(s.SIZE)
 clock = pygame.time.Clock()
-font = pygame.font.SysFont("consolas", 64)
+font = pygame.font.SysFont("consolas", 42)
 
 
 # function to draw text
