@@ -1,0 +1,8 @@
+dark_blue_black = 10, 10, 30    # Background color, inspired by space
+purple = 120, 78, 190           # Player character
+bright_pink_red = 255, 50, 90   # One of the enemies
+dark_purple = 80, 50, 170       # Another enemy
+light_green = 50, 220, 100      # Third enemy
+white = 255, 255, 255           # Laser
+yellow = 255, 200, 50           # Explosions
+player_green = 152, 218, 53     # Player character green
