@@ -1,6 +1,8 @@
 import pygame
 import settings as s
 import colors
+import spritesheet_helper
+from entities import player
 
 
 # Initialize pygame
@@ -8,6 +10,11 @@ pygame.init()
 screen = pygame.display.set_mode(s.SIZE)
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("consolas", 42)
+
+
+# Load images
+player_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/player.png").convert_alpha())
+player_image = player_image.get_image(0, 32, 32, 2, colors.black)
 
 
 # Function to draw text
@@ -26,10 +33,18 @@ class Game:
         self.play = Play(self.game_state_manager)
         self.quit = Quit(self.game_state_manager)
 
+        # Groups
+        self.player_group = pygame.sprite.Group()
+        self.enemy_group = pygame.sprite.Group()
+        self.bullet_group = pygame.sprite.Group()
+
         self.states = {"main_menu": self.main_menu,
                        "play": self.play,
                        "quit": self.quit
                        }
+
+        self.player = player.Player(player_image)
+        self.player_group.add(self.player)
 
     def run(self):
         while self.running:
@@ -41,6 +56,10 @@ class Game:
             self.states[self.game_state_manager.get_state()].update(events)
             if self.game_state_manager.get_state() == "quit":
                 self.running = False
+
+            keys = pygame.key.get_pressed()
+            self.player_group.update(keys)
+            self.player_group.draw(screen)
 
             pygame.display.flip()
             clock.tick(s.FPS)

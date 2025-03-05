@@ -6,3 +6,4 @@ light_green = 50, 220, 100      # Third enemy
 white = 255, 255, 255           # Laser
 yellow = 255, 200, 50           # Explosions
 player_green = 152, 218, 53     # Player character green
+black = 0, 0, 0                 # Black color
