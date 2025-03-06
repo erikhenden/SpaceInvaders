@@ -1,5 +1,7 @@
 import pygame
-import settings as s
+
+import entities.enemy
+import settings
 import colors
 import spritesheet_helper
 from entities import player
@@ -7,15 +9,22 @@ from entities import player
 
 # Initialize pygame
 pygame.init()
-screen = pygame.display.set_mode(s.SIZE)
+screen = pygame.display.set_mode(settings.SIZE)
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("consolas", 42)
 
 
-# Load images
+# Load player image
 player_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/player.png").convert_alpha())
 player_image = player_image.get_image(0, 32, 32, 2, colors.black)
 
+# Load enemy spritesheet
+enemy1_animations = []
+enemy1_spritesheet = spritesheet_helper.SpriteSheet(pygame.image.load("images/enemy1.png").convert_alpha())
+
+# Add enemy_spritesheet images
+for frame in range(2):  # 2 animations/frames
+    enemy1_animations.append(enemy1_spritesheet.get_image(frame, 32, 32, settings.ENEMY_SCALE, colors.black))
 
 # Function to draw text
 def draw_text(x, y, text, color):
@@ -33,18 +42,10 @@ class Game:
         self.play = Play(self.game_state_manager)
         self.quit = Quit(self.game_state_manager)
 
-        # Groups
-        self.player_group = pygame.sprite.Group()
-        self.enemy_group = pygame.sprite.Group()
-        self.bullet_group = pygame.sprite.Group()
-
         self.states = {"main_menu": self.main_menu,
                        "play": self.play,
                        "quit": self.quit
                        }
-
-        self.player = player.Player(player_image)
-        self.player_group.add(self.player)
 
     def run(self):
         while self.running:
@@ -53,16 +54,15 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.running = False
 
-            self.states[self.game_state_manager.get_state()].update(events)
+            keys = pygame.key.get_pressed()
+            self.states[self.game_state_manager.get_state()].update(events, keys)
             if self.game_state_manager.get_state() == "quit":
                 self.running = False
 
-            keys = pygame.key.get_pressed()
-            self.player_group.update(keys)
-            self.player_group.draw(screen)
+
 
             pygame.display.flip()
-            clock.tick(s.FPS)
+            clock.tick(settings.FPS)
 
 
 class GameStateManager:
@@ -80,11 +80,11 @@ class MainMenu:
     def __init__(self, game_state_manager):
         self.game_state_manager = game_state_manager
 
-    def update(self, events):
+    def update(self, events, keys):
         screen.fill(colors.dark_purple)
-        play_rect = draw_text(s.WIDTH // 2 - 80, 300, "Play", colors.white)
-        highscore_rect = draw_text(s.WIDTH// 2 - 80, 350, "Highscore", colors.white)
-        quit_rect = draw_text(s.WIDTH // 2 - 80, 400, "Quit", colors.white)
+        play_rect = draw_text(settings.WIDTH // 2 - 80, 300, "Play", colors.white)
+        highscore_rect = draw_text(settings.WIDTH// 2 - 80, 350, "Highscore", colors.white)
+        quit_rect = draw_text(settings.WIDTH // 2 - 80, 400, "Quit", colors.white)
         pos = pygame.mouse.get_pos()
 
         for event in events:
@@ -102,8 +102,33 @@ class Play:
     def __init__(self, game_state_manager):
         self.game_state_manager = game_state_manager
 
-    def update(self, events):
+        # Groups
+        self.player_group = pygame.sprite.Group()
+        self.enemy_group = pygame.sprite.Group()
+        self.bullet_group = pygame.sprite.Group()
+
+        # Add player
+        self.player = player.Player(player_image)
+        self.player_group.add(self.player)
+
+        # Add enemies
+        startpos = 150
+        for i in range(12):
+            enemy = entities.enemy.Enemy(enemy1_animations, (startpos + (i * 32)) * settings.ENEMY_SCALE, 100, i)
+            self.enemy_group.add(enemy)
+
+    def update(self, events, keys):
         screen.fill(colors.dark_blue_black)
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.game_state_manager.set_state("main_menu")
+
+        self.player_group.update(keys)
+        self.enemy_group.update(clock.get_time())
+
+        self.player_group.draw(screen)
+        self.enemy_group.draw(screen)
 
 
 class Quit:
