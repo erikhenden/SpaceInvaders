@@ -1,6 +1,6 @@
 import pygame
 
-import entities.bullet
+from entities.bullet import Bullet
 from entities import enemy
 import settings
 import colors
@@ -152,8 +152,7 @@ class Play:
                 if event.key == pygame.K_ESCAPE:
                     self.game_state_manager.set_state("main_menu")
                 if event.key == pygame.K_SPACE:
-                    new_bullet = entities.bullet.Bullet(bullet_image, self.player.rect.midtop)
-                    self.bullet_group.add(new_bullet)
+                    self.bullet_group.add(Bullet(bullet_image, self.player.rect.midtop))
 
         # Check bullet-enemy collision
         pygame.sprite.groupcollide(self.enemy_group, self.bullet_group, True, True)
