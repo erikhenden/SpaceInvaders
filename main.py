@@ -155,13 +155,15 @@ class Play:
                     new_bullet = entities.bullet.Bullet(bullet_image, self.player.rect.midtop)
                     self.bullet_group.add(new_bullet)
 
+        # Check bullet-enemy collision
+        pygame.sprite.groupcollide(self.enemy_group, self.bullet_group, True, True)
+
+        # Update
         self.player_group.update(keys)
         self.enemy_group.update(clock.get_time())
         self.bullet_group.update()
 
-        # Check bullet-enemy collision
-        pygame.sprite.groupcollide(self.enemy_group, self.bullet_group, True, True)
-
+        # Draw
         self.player_group.draw(screen)
         self.enemy_group.draw(screen)
         self.bullet_group.draw(screen)
