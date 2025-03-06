@@ -15,6 +15,12 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_d]:  # Move right
             self.rect.x += self.speed
 
+        # Check edge collision
+        if self.rect.x <= 0:
+            self.rect.x = 0
+        if self.rect.right >= settings.WIDTH:
+            self.rect.right = settings.WIDTH
+
     def shoot(self, keys):
         if keys[pygame.K_SPACE]:
             pass

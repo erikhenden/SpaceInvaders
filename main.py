@@ -1,6 +1,6 @@
 import pygame
 
-import entities.enemy
+from entities import enemy
 import settings
 import colors
 import spritesheet_helper
@@ -16,15 +16,27 @@ font = pygame.font.SysFont("consolas", 42)
 
 # Load player image
 player_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/player.png").convert_alpha())
-player_image = player_image.get_image(0, 32, 32, 2, colors.black)
+player_image = player_image.get_image(0, 32, 32, 1, colors.black)
 
 # Load enemy spritesheet
 enemy1_animations = []
+enemy2_animations = []
+enemy3_animations = []
+
 enemy1_spritesheet = spritesheet_helper.SpriteSheet(pygame.image.load("images/enemy1.png").convert_alpha())
+enemy2_spritesheet = spritesheet_helper.SpriteSheet(pygame.image.load("images/enemy2_crab.png").convert_alpha())
+enemy3_spritesheet = spritesheet_helper.SpriteSheet(pygame.image.load("images/enemy3.png").convert_alpha())
 
 # Add enemy_spritesheet images
 for frame in range(2):  # 2 animations/frames
     enemy1_animations.append(enemy1_spritesheet.get_image(frame, 32, 32, settings.ENEMY_SCALE, colors.black))
+
+for frame in range(2):  # 2 animations/frames
+    enemy2_animations.append(enemy2_spritesheet.get_image(frame, 32, 32, settings.ENEMY_SCALE, colors.black))
+
+for frame in range(2):  # 2 animations/frames
+    enemy3_animations.append(enemy3_spritesheet.get_image(frame, 32, 32, settings.ENEMY_SCALE, colors.black))
+
 
 # Function to draw text
 def draw_text(x, y, text, color):
@@ -58,8 +70,6 @@ class Game:
             self.states[self.game_state_manager.get_state()].update(events, keys)
             if self.game_state_manager.get_state() == "quit":
                 self.running = False
-
-
 
             pygame.display.flip()
             clock.tick(settings.FPS)
@@ -113,9 +123,21 @@ class Play:
 
         # Add enemies
         startpos = 150
-        for i in range(12):
-            enemy = entities.enemy.Enemy(enemy1_animations, (startpos + (i * 32)) * settings.ENEMY_SCALE, 100, i)
-            self.enemy_group.add(enemy)
+        current_row = 0
+        for row in range(settings.TOTAL_ROWS):
+
+            # Get correct enemy spritesheet
+            if current_row == 0 or current_row == 1:
+                animations = enemy1_animations
+            elif current_row == 2 or current_row == 3:
+                animations = enemy2_animations
+            elif current_row == 4 or current_row == 5:
+                animations = enemy3_animations
+
+            for i in range(12):
+                new_enemy = enemy.Enemy(animations, (startpos + (i * 32)) * settings.ENEMY_SCALE, 70 + (current_row * (settings.ENEMY_SCALE * 32)), i)
+                self.enemy_group.add(new_enemy)
+            current_row += 1
 
     def update(self, events, keys):
         screen.fill(colors.dark_blue_black)
