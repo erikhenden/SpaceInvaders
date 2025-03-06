@@ -21,10 +21,5 @@ class Player(pygame.sprite.Sprite):
         if self.rect.right >= settings.WIDTH:
             self.rect.right = settings.WIDTH
 
-    def shoot(self, keys):
-        if keys[pygame.K_SPACE]:
-            pass
-
     def update(self, keys):
         self.move(keys)
-        self.shoot(keys)

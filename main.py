@@ -1,5 +1,6 @@
 import pygame
 
+import entities.bullet
 from entities import enemy
 import settings
 import colors
@@ -36,6 +37,11 @@ for frame in range(2):  # 2 animations/frames
 
 for frame in range(2):  # 2 animations/frames
     enemy3_animations.append(enemy3_spritesheet.get_image(frame, 32, 32, settings.ENEMY_SCALE, colors.black))
+
+
+# Load bullet image
+bullet_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/bullet.png").convert_alpha())
+bullet_image = bullet_image.get_image(0, 8, 8, 1, colors.black)
 
 
 # Function to draw text
@@ -145,12 +151,20 @@ class Play:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.game_state_manager.set_state("main_menu")
+                if event.key == pygame.K_SPACE:
+                    new_bullet = entities.bullet.Bullet(bullet_image, self.player.rect.midtop)
+                    self.bullet_group.add(new_bullet)
 
         self.player_group.update(keys)
         self.enemy_group.update(clock.get_time())
+        self.bullet_group.update()
+
+        # Check bullet-enemy collision
+        pygame.sprite.groupcollide(self.enemy_group, self.bullet_group, True, True)
 
         self.player_group.draw(screen)
         self.enemy_group.draw(screen)
+        self.bullet_group.draw(screen)
 
 
 class Quit:

@@ -8,7 +8,7 @@ class Enemy(pygame.sprite.Sprite):
         self.animation_list = animation_list
         self.image = self.animation_list[self.frame]
         self.rect = self.image.get_rect(topleft=(x, y))
-        self.speed = 10
+        self.speed = 12
         self.direction = "left"
         self.movement_timer = 0
         self.position = position
