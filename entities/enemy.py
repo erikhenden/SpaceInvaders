@@ -1,8 +1,10 @@
 import pygame
 import settings
+from random import randint
+from entities import bullet
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, animation_list, x, y, position):
+    def __init__(self, animation_list, x, y, position, bullet_animation_list):
         super().__init__()
         self.frame = 0
         self.animation_list = animation_list
@@ -13,6 +15,8 @@ class Enemy(pygame.sprite.Sprite):
         self.movement_timer = 0
         self.position = position
         self.move_down = False
+        self.bullet_timer = 0
+        self.bullet_animation_list = bullet_animation_list
 
         # Calculate reversed position, used to stay in correct position when the group of enemies has reached the
         # right side of the screen
@@ -20,7 +24,14 @@ class Enemy(pygame.sprite.Sprite):
         reverse_poslist = sorted(poslist, reverse=True)
         self.reverse_position = reverse_poslist[self.position]
 
-    def update(self, add_time):
+    def shoot(self, add_time, enemy_bullet_group):
+        self.bullet_timer += add_time
+        if self.bullet_timer >= randint(2000, 3500):
+            if randint(0, 20) == 20:
+                enemy_bullet_group.add(bullet.EnemyBullet(self.bullet_animation_list, self.rect.midbottom))
+            self.bullet_timer = 0
+
+    def update(self, add_time, enemy_bullet_group):
         self.movement_timer += add_time
         if self.movement_timer > settings.ENEMY_ANIMATION_COOLDOWN:
 
@@ -51,3 +62,6 @@ class Enemy(pygame.sprite.Sprite):
         if self.rect.right >= settings.WIDTH - (self.reverse_position * (settings.ENEMY_SCALE * 32)):
             self.direction = "left"
             self.move_down = True
+
+        # Shoot
+        self.shoot(add_time, enemy_bullet_group)

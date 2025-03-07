@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e4905002-9999-43c2-8c62-c4a371f95826" name="Changes" comment="Updates">
-      <change afterPath="$PROJECT_DIR$/entities/wall.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/images/wall.png" afterDir="false" />
+    <list default="true" id="e4905002-9999-43c2-8c62-c4a371f95826" name="Changes" comment="Updates, walls">
+      <change afterPath="$PROJECT_DIR$/images/enemy_bullet_1.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/entities/bullet.py" beforeDir="false" afterPath="$PROJECT_DIR$/entities/bullet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/entities/enemy.py" beforeDir="false" afterPath="$PROJECT_DIR$/entities/enemy.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
     </list>
@@ -160,13 +160,21 @@
       <option name="presentableId" value="LOCAL−00011" />
       <updated>1741292049295</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL−00012" summary="Updates, walls">
+      <option name="closed" value="true" />
+      <created>1741340450746</created>
+      <option name="number" value="LOCAL−00012" />
+      <option name="presentableId" value="LOCAL−00012" />
+      <updated>1741340450746</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Update main menu" />
     <MESSAGE value="Update" />
     <MESSAGE value="Updates" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updates" />
+    <MESSAGE value="Updates, walls" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updates, walls" />
   </component>
 </project>

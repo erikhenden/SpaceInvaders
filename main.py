@@ -1,6 +1,6 @@
 import pygame
 
-from entities.bullet import Bullet
+from entities.bullet import PlayerBullet
 from entities.wall import *
 from entities import enemy
 import settings
@@ -18,7 +18,7 @@ font = pygame.font.SysFont("consolas", 42)
 
 # Load player image
 player_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/player.png").convert_alpha())
-player_image = player_image.get_image(0, 32, 32, 1.5, colors.black)
+player_image = player_image.get_image(0, 32, 32, 1.1, colors.black)
 
 # Load enemy spritesheet
 enemy1_animations = []
@@ -40,10 +40,15 @@ for frame in range(2):  # 2 animations/frames
     enemy3_animations.append(enemy3_spritesheet.get_image(frame, 32, 32, settings.ENEMY_SCALE, colors.black))
 
 
-# Load bullet image
+# Load player bullet image
 bullet_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/bullet.png").convert_alpha())
-bullet_image = bullet_image.get_image(0, 8, 8, 1, colors.black)
+bullet_image = bullet_image.get_image(0, 8, 8, 1.2, colors.black)
 
+# Load enemy bullet spritesheet
+enemy_bullet1_animations = []
+enemy_bullet_spritesheet1 = spritesheet_helper.SpriteSheet(pygame.image.load("images/enemy_bullet_1.png").convert_alpha())
+for frame in range(2):  # 2 animations/frames
+    enemy_bullet1_animations.append(enemy_bullet_spritesheet1.get_image(frame, 32, 32, 0.6, colors.black))
 
 # Load wall image
 wall_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/wall.png").convert_alpha())
@@ -127,7 +132,8 @@ class Play:
         # Groups
         self.player_group = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.Group()
-        self.bullet_group = pygame.sprite.Group()
+        self.player_bullet_group = pygame.sprite.Group()
+        self.enemy_bullet_group = pygame.sprite.Group()
         self.wall_group = pygame.sprite.Group()
 
         # Add player
@@ -148,7 +154,7 @@ class Play:
                 animations = enemy3_animations
 
             for i in range(12):
-                new_enemy = enemy.Enemy(animations, (startpos + (i * 32)) * settings.ENEMY_SCALE, 70 + (current_row * (settings.ENEMY_SCALE * 32)), i)
+                new_enemy = enemy.Enemy(animations, (startpos + (i * 32)) * settings.ENEMY_SCALE, 70 + (current_row * (settings.ENEMY_SCALE * 32)), i, enemy_bullet1_animations)
                 self.enemy_group.add(new_enemy)
             current_row += 1
 
@@ -179,21 +185,24 @@ class Play:
                 if event.key == pygame.K_ESCAPE:
                     self.game_state_manager.set_state("main_menu")
                 if event.key == pygame.K_SPACE:
-                    self.bullet_group.add(Bullet(bullet_image, self.player.rect.midtop))
+                    self.player_bullet_group.add(PlayerBullet(bullet_image, self.player.rect.midtop))
 
         # Check bullet-enemy collision
-        pygame.sprite.groupcollide(self.enemy_group, self.bullet_group, True, True)
+        pygame.sprite.groupcollide(self.enemy_group, self.player_bullet_group, True, True)
 
         # Update
+        timer = clock.get_time()
         self.player_group.update(keys)
-        self.enemy_group.update(clock.get_time())
-        self.bullet_group.update()
+        self.enemy_group.update(timer, self.enemy_bullet_group)
+        self.player_bullet_group.update()
+        self.enemy_bullet_group.update(timer)
         self.wall_group.update()
 
         # Draw
         self.player_group.draw(screen)
         self.enemy_group.draw(screen)
-        self.bullet_group.draw(screen)
+        self.player_bullet_group.draw(screen)
+        self.enemy_bullet_group.draw(screen)
         self.wall_group.draw(screen)
 
 
