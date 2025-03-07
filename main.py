@@ -48,7 +48,7 @@ bullet_image = bullet_image.get_image(0, 8, 8, 1.2, colors.black)
 enemy_bullet1_animations = []
 enemy_bullet_spritesheet1 = spritesheet_helper.SpriteSheet(pygame.image.load("images/enemy_bullet_1.png").convert_alpha())
 for frame in range(2):  # 2 animations/frames
-    enemy_bullet1_animations.append(enemy_bullet_spritesheet1.get_image(frame, 32, 32, 0.6, colors.black))
+    enemy_bullet1_animations.append(enemy_bullet_spritesheet1.get_image(frame, 32, 32, 0.8, colors.black))
 
 # Load wall image
 wall_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/wall.png").convert_alpha())
@@ -143,7 +143,7 @@ class Play:
         # Add enemies
         startpos = 150
         current_row = 0
-        for row in range(settings.TOTAL_ROWS):
+        for row in range(settings.TOTAL_ENEMY_ROWS):
 
             # Get correct enemy spritesheet
             if current_row == 0 or current_row == 1:
