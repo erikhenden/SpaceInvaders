@@ -1,6 +1,7 @@
 import pygame
 
 from entities.bullet import Bullet
+from entities.wall import *
 from entities import enemy
 import settings
 import colors
@@ -17,7 +18,7 @@ font = pygame.font.SysFont("consolas", 42)
 
 # Load player image
 player_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/player.png").convert_alpha())
-player_image = player_image.get_image(0, 32, 32, 1, colors.black)
+player_image = player_image.get_image(0, 32, 32, 1.5, colors.black)
 
 # Load enemy spritesheet
 enemy1_animations = []
@@ -42,6 +43,11 @@ for frame in range(2):  # 2 animations/frames
 # Load bullet image
 bullet_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/bullet.png").convert_alpha())
 bullet_image = bullet_image.get_image(0, 8, 8, 1, colors.black)
+
+
+# Load wall image
+wall_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/wall.png").convert_alpha())
+wall_image = wall_image.get_image(0, 8, 8, settings.WALL_SCALE, colors.black)
 
 
 # Function to draw text
@@ -122,6 +128,7 @@ class Play:
         self.player_group = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.Group()
         self.bullet_group = pygame.sprite.Group()
+        self.wall_group = pygame.sprite.Group()
 
         # Add player
         self.player = player.Player(player_image)
@@ -145,6 +152,26 @@ class Play:
                 self.enemy_group.add(new_enemy)
             current_row += 1
 
+        # Add walls
+        wall_offset_x = 100
+        wall_offset_y = settings.HEIGHT - 140
+        number_of_walls = 4
+        distance_between_walls = 150
+
+        for i in range(number_of_walls):
+
+            # Get the x and y position from the wall matrix, as well as the value which indicates whether to place a
+            # wall piece or not
+            for y, row in enumerate(wall_matrix):
+                for x, value in enumerate(row):
+                    if value == 1:  # Add a piece to the wall
+                        wall_piece = Wall(wall_image, wall_offset_x + ((x * 8) * settings.WALL_SCALE), wall_offset_y + ((y * 8) * settings.WALL_SCALE))
+                        self.wall_group.add(wall_piece)
+
+            # When one wall is finished, increase wall_offset_x to create distance between the walls
+            wall_offset_x += distance_between_walls
+
+
     def update(self, events, keys):
         screen.fill(colors.dark_blue_black)
         for event in events:
@@ -161,11 +188,13 @@ class Play:
         self.player_group.update(keys)
         self.enemy_group.update(clock.get_time())
         self.bullet_group.update()
+        self.wall_group.update()
 
         # Draw
         self.player_group.draw(screen)
         self.enemy_group.draw(screen)
         self.bullet_group.draw(screen)
+        self.wall_group.draw(screen)
 
 
 class Quit:
