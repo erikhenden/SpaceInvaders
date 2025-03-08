@@ -26,8 +26,8 @@ class Enemy(pygame.sprite.Sprite):
 
     def shoot(self, add_time, enemy_bullet_group):
         self.bullet_timer += add_time
-        if self.bullet_timer >= randint(2000, 3500):
-            if randint(0, 20) == 20:
+        if self.bullet_timer >= randint(*settings.enemy_shoot_cooldown):
+            if randint(0, settings.enemy_shoot_chance) == 0:
                 enemy_bullet_group.add(bullet.EnemyBullet(self.bullet_animation_list, self.rect.midbottom))
             self.bullet_timer = 0
 

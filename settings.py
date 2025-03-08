@@ -7,4 +7,6 @@ TOTAL_ENEMY_ROWS = 6
 WALL_SCALE = 0.5
 
 # Changeable
-enemy_animation_cooldown = 500
+enemy_animation_cooldown = 750
+enemy_shoot_cooldown = [2000, 3500]
+enemy_shoot_chance = 20

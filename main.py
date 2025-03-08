@@ -42,7 +42,7 @@ for frame in range(2):  # 2 animations/frames
 
 # Load player bullet image
 bullet_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/bullet.png").convert_alpha())
-bullet_image = bullet_image.get_image(0, 8, 8, 1.2, colors.black)
+bullet_image = bullet_image.get_image(0, 8, 8, 0.8, colors.black)
 
 # Load enemy bullet spritesheet
 enemy_bullet1_animations = []
@@ -140,6 +140,10 @@ class Play:
         self.player = player.Player(player_image)
         self.player_group.add(self.player)
 
+        # Number of enemies killed in turn for the enemy speed to increase
+        self.kill_increase = 6
+        self.increase_speed = False
+
         # Add enemies
         startpos = 150
         current_row = 0
@@ -189,6 +193,32 @@ class Play:
 
         # Check bullet-enemy collision
         pygame.sprite.groupcollide(self.enemy_group, self.player_bullet_group, True, True)
+
+        # Check bullet-wall collision
+        pygame.sprite.groupcollide(self.wall_group, self.player_bullet_group, True, True)
+
+        # Check enemy_bullet-wall collision
+        pygame.sprite.groupcollide(self.wall_group, self.enemy_bullet_group, True, True)
+
+        # Check enemy_bullet-player collision
+        player_hit = pygame.sprite.groupcollide(self.player_group, self.enemy_bullet_group, True, True)
+        if player_hit:
+            pass
+
+        # Increase enemy speed and shot rate when their numbers are reduced
+        if len(self.enemy_group) <= 72 - self.kill_increase:
+            self.increase_speed = True
+            settings.enemy_shoot_cooldown[0] -= 100
+            settings.enemy_shoot_cooldown[1] -= 200
+            settings.enemy_shoot_chance -= 1  # Increases chance to shoot
+            print(settings.enemy_shoot_cooldown)
+            print(settings.enemy_shoot_chance)
+
+            self.kill_increase += 6
+
+        if self.increase_speed:
+            settings.enemy_animation_cooldown -= 50
+            self.increase_speed = False
 
         # Update
         timer = clock.get_time()
