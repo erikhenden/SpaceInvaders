@@ -7,13 +7,15 @@ import settings
 import colors
 import spritesheet_helper
 from entities import player
+from UI.healthbar import *
 
 
 # Initialize pygame
 pygame.init()
 screen = pygame.display.set_mode(settings.SIZE)
 clock = pygame.time.Clock()
-font = pygame.font.SysFont("consolas", 42)
+font_main_menu = pygame.font.SysFont("consolas", 42)
+font_ui = pygame.font.SysFont("consolas", 20)
 
 
 # Load player image
@@ -55,8 +57,14 @@ wall_image = spritesheet_helper.SpriteSheet(pygame.image.load("images/wall.png")
 wall_image = wall_image.get_image(0, 8, 8, settings.WALL_SCALE, colors.black)
 
 
+# Load healthbar spritesheet
+healthbar_spritesheet = spritesheet_helper.SpriteSheet(pygame.image.load("images/healthbar.png").convert_alpha())
+healthbar_animation_list = []
+for frame in range(3):
+    healthbar_animation_list.append(healthbar_spritesheet.get_image(frame, 108, 32, 1, colors.black))
+
 # Function to draw text
-def draw_text(x, y, text, color):
+def draw_text(x, y, text, color, font):
     text = font.render(text, True, color)
     text_rect = text.get_rect(topleft=(x, y))
     screen.blit(text, text_rect)
@@ -109,9 +117,9 @@ class MainMenu:
 
     def update(self, events, keys):
         screen.fill(colors.dark_purple)
-        play_rect = draw_text(settings.WIDTH // 2 - 80, 300, "Play", colors.white)
-        highscore_rect = draw_text(settings.WIDTH// 2 - 80, 350, "Highscore", colors.white)
-        quit_rect = draw_text(settings.WIDTH // 2 - 80, 400, "Quit", colors.white)
+        play_rect = draw_text(settings.WIDTH // 2 - 80, 300, "Play", colors.white, font_main_menu)
+        highscore_rect = draw_text(settings.WIDTH// 2 - 80, 350, "Highscore", colors.white, font_main_menu)
+        quit_rect = draw_text(settings.WIDTH // 2 - 80, 400, "Quit", colors.white, font_main_menu)
         pos = pygame.mouse.get_pos()
 
         for event in events:
@@ -135,10 +143,15 @@ class Play:
         self.player_bullet_group = pygame.sprite.Group()
         self.enemy_bullet_group = pygame.sprite.Group()
         self.wall_group = pygame.sprite.Group()
+        self.ui_group = pygame.sprite.Group()
 
         # Add player
         self.player = player.Player(player_image)
         self.player_group.add(self.player)
+
+        # Healthbar
+        self.healthbar = HealthBar(healthbar_animation_list, settings.WIDTH - 130, 0)
+        self.ui_group.add(self.healthbar)
 
         # Number of enemies killed in turn for the enemy speed to increase
         self.kill_increase = 6
@@ -201,9 +214,26 @@ class Play:
         pygame.sprite.groupcollide(self.wall_group, self.enemy_bullet_group, True, True)
 
         # Check enemy_bullet-player collision
-        player_hit = pygame.sprite.groupcollide(self.player_group, self.enemy_bullet_group, True, True)
+        player_hit = pygame.sprite.groupcollide(self.player_group, self.enemy_bullet_group, False, True)
         if player_hit:
-            pass
+            self.player.hit = True
+
+        # Check bullet-bullet collision
+        pygame.sprite.groupcollide(self.player_bullet_group, self.enemy_bullet_group, True, False)
+
+        if self.player.hit:
+            if self.player.lives == 1:  # Game over
+                print("Quit")
+                self.game_state_manager.set_state("quit")
+            else:
+                self.player.lives -= 1
+                self.healthbar.reduce()
+                print(self.healthbar.frame, self.player.lives)
+
+            self.player.hit = False
+
+        # Draw text
+        draw_text(self.healthbar.rect.x - 68, 16, "Lives", colors.white, font_ui)
 
         # Increase enemy speed and shot rate when their numbers are reduced
         if len(self.enemy_group) <= 72 - self.kill_increase:
@@ -211,14 +241,16 @@ class Play:
             settings.enemy_shoot_cooldown[0] -= 100
             settings.enemy_shoot_cooldown[1] -= 200
             settings.enemy_shoot_chance -= 1  # Increases chance to shoot
-            print(settings.enemy_shoot_cooldown)
-            print(settings.enemy_shoot_chance)
+            # print(settings.enemy_shoot_cooldown)
+            # print(settings.enemy_shoot_chance)
 
             self.kill_increase += 6
-
         if self.increase_speed:
-            settings.enemy_animation_cooldown -= 50
+            settings.enemy_animation_cooldown -= 60
             self.increase_speed = False
+
+        if len(self.enemy_group) == 1:
+            settings.enemy_animation_cooldown = 20
 
         # Update
         timer = clock.get_time()
@@ -227,6 +259,7 @@ class Play:
         self.player_bullet_group.update()
         self.enemy_bullet_group.update(timer)
         self.wall_group.update()
+        self.ui_group.update()
 
         # Draw
         self.player_group.draw(screen)
@@ -234,6 +267,7 @@ class Play:
         self.player_bullet_group.draw(screen)
         self.enemy_bullet_group.draw(screen)
         self.wall_group.draw(screen)
+        self.ui_group.draw(screen)
 
 
 class Quit:
