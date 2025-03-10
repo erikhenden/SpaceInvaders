@@ -205,7 +205,13 @@ class Play:
                     self.player_bullet_group.add(PlayerBullet(bullet_image, self.player.rect.midtop))
 
         # Check bullet-enemy collision
-        pygame.sprite.groupcollide(self.enemy_group, self.player_bullet_group, True, True)
+        enemy_killed = pygame.sprite.groupcollide(self.enemy_group, self.player_bullet_group, True, True)
+        if enemy_killed:
+            self.player.hit_enemy = True
+
+        if self.player.hit_enemy:
+            self.player.score += 100
+            self.player.hit_enemy = False
 
         # Check bullet-wall collision
         pygame.sprite.groupcollide(self.wall_group, self.player_bullet_group, True, True)
@@ -223,7 +229,7 @@ class Play:
 
         if self.player.hit:
             if self.player.lives == 1:  # Game over
-                print("Quit")
+                print("GAME OVER")
                 self.game_state_manager.set_state("quit")
             else:
                 self.player.lives -= 1
@@ -234,6 +240,7 @@ class Play:
 
         # Draw text
         draw_text(self.healthbar.rect.x - 68, 16, "Lives", colors.white, font_ui)
+        draw_text(10, 16, f"Score: {self.player.score}", colors.white, font_ui)
 
         # Increase enemy speed and shot rate when their numbers are reduced
         if len(self.enemy_group) <= 72 - self.kill_increase:

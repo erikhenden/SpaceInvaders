@@ -9,7 +9,9 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(settings.WIDTH // 2, settings.HEIGHT - 80))
         self.speed = 5
         self.hit = False
+        self.hit_enemy = False
         self.lives = 3
+        self.score = 0
 
     def move(self, keys):
         if keys[pygame.K_a]:  # Move left
