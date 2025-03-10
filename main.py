@@ -240,7 +240,7 @@ class Play:
 
         # Draw text
         draw_text(self.healthbar.rect.x - 68, 16, "Lives", colors.white, font_ui)
-        draw_text(10, 16, f"Score: {self.player.score}", colors.white, font_ui)
+        draw_text(16, 16, f"Score: {self.player.score}", colors.white, font_ui)
 
         # Increase enemy speed and shot rate when their numbers are reduced
         if len(self.enemy_group) <= 72 - self.kill_increase:
