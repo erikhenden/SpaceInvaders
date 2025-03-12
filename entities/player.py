@@ -27,4 +27,5 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = settings.WIDTH
 
     def update(self, keys):
-        self.move(keys)
+        if not settings.enemies_stop:
+            self.move(keys)

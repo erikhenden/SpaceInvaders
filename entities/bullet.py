@@ -9,7 +9,7 @@ class PlayerBullet(pygame.sprite.Sprite):
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.midbottom = midbottom
-        self.speed = 8
+        self.speed = 15
 
     def update(self):
         self.rect.y -= self.speed

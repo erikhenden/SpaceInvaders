@@ -8,6 +8,7 @@ import colors
 import spritesheet_helper
 from entities import player
 from UI.healthbar import *
+from FX.enemy_explosion import *
 
 
 # Initialize pygame
@@ -62,6 +63,9 @@ healthbar_spritesheet = spritesheet_helper.SpriteSheet(pygame.image.load("images
 healthbar_animation_list = []
 for frame in range(3):
     healthbar_animation_list.append(healthbar_spritesheet.get_image(frame, 108, 32, 1, colors.black))
+
+# Load enemy explosion image
+enemy_explosion_image = pygame.image.load("images/enemy_explosion.png").convert_alpha()
 
 # Function to draw text
 def draw_text(x, y, text, color, font):
@@ -137,6 +141,7 @@ class Play:
     def __init__(self, game_state_manager):
         self.game_state_manager = game_state_manager
         self.enemies_stop_timer = 0
+        self.explosion_group = []
 
         # Groups
         self.player_group = pygame.sprite.Group()
@@ -204,7 +209,7 @@ class Play:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.game_state_manager.set_state("main_menu")
-                if event.key == pygame.K_SPACE and not settings.enemies_stop and self.player.shoot_cooldown >= 200:
+                if event.key == pygame.K_SPACE and self.player.shoot_cooldown >= 350 and not settings.enemies_stop:
                     self.player_bullet_group.add(PlayerBullet(bullet_image, self.player.rect.midtop))
                     self.player.shoot_cooldown = 0
 
@@ -213,6 +218,8 @@ class Play:
         if enemy_killed:
             self.player.hit_enemy = True
             settings.enemies_stop = True
+            for enemy, player in enemy_killed.items():
+                self.explosion_group.append(EnemyExplosion(enemy_explosion_image, enemy.rect.center))
 
         if self.player.hit_enemy:
             self.player.score += 100
@@ -221,7 +228,7 @@ class Play:
         # Stops enemies for a while when they are shot
         if settings.enemies_stop:
             self.enemies_stop_timer += timer
-            if self.enemies_stop_timer >= 500:
+            if self.enemies_stop_timer >= 350:
                 settings.enemies_stop = False
                 self.enemies_stop_timer = 0
 
@@ -279,6 +286,11 @@ class Play:
         self.wall_group.update()
         self.ui_group.update()
 
+        for expl in self.explosion_group:
+            expl.update(timer)
+            if expl.timer <= 0:
+                self.explosion_group.remove(expl)
+
         # Draw
         self.player_group.draw(screen)
         self.enemy_group.draw(screen)
@@ -286,6 +298,9 @@ class Play:
         self.enemy_bullet_group.draw(screen)
         self.wall_group.draw(screen)
         self.ui_group.draw(screen)
+
+        for expl in self.explosion_group:
+            expl.draw(screen)
 
 
 class Quit:
