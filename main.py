@@ -179,6 +179,7 @@ class Play:
             for i in range(12):
                 new_enemy = enemy.Enemy(animations, (startpos + (i * 32)) * settings.ENEMY_SCALE, 70 + (current_row * (settings.ENEMY_SCALE * 32)), i, enemy_bullet1_animations)
                 self.enemy_group.add(new_enemy)
+
             current_row += 1
 
         # Add walls
