@@ -12,6 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.hit_enemy = False
         self.lives = 3
         self.score = 0
+        self.shoot_cooldown = 500
 
     def move(self, keys):
         if keys[pygame.K_a]:  # Move left

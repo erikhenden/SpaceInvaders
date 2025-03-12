@@ -17,6 +17,7 @@ class Enemy(pygame.sprite.Sprite):
         self.move_down = False
         self.bullet_timer = randint(0, 2000)
         self.bullet_animation_list = bullet_animation_list
+        self.stop = False
 
         # Calculate reversed position, used to stay in correct position when the group of enemies has reached the
         # right side of the screen
@@ -33,7 +34,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self, add_time, enemy_bullet_group):
         self.movement_timer += add_time
-        if self.movement_timer > settings.enemy_animation_cooldown:
+        if self.movement_timer > settings.enemy_animation_cooldown and not settings.enemies_stop:
 
             # Update frame
             if self.frame == 0:
@@ -64,4 +65,5 @@ class Enemy(pygame.sprite.Sprite):
             self.move_down = True
 
         # Shoot
-        self.shoot(add_time, enemy_bullet_group)
+        if not settings.enemies_stop:
+            self.shoot(add_time, enemy_bullet_group)

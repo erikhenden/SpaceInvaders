@@ -10,3 +10,4 @@ WALL_SCALE = 0.5
 enemy_animation_cooldown = 750
 enemy_shoot_cooldown = [2000, 3500]
 enemy_shoot_chance = 20
+enemies_stop = False

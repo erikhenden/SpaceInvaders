@@ -136,6 +136,7 @@ class MainMenu:
 class Play:
     def __init__(self, game_state_manager):
         self.game_state_manager = game_state_manager
+        self.enemies_stop_timer = 0
 
         # Groups
         self.player_group = pygame.sprite.Group()
@@ -196,22 +197,33 @@ class Play:
 
 
     def update(self, events, keys):
+        timer = clock.get_time()
         screen.fill(colors.dark_blue_black)
+        self.player.shoot_cooldown += timer
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.game_state_manager.set_state("main_menu")
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE and not settings.enemies_stop and self.player.shoot_cooldown >= 200:
                     self.player_bullet_group.add(PlayerBullet(bullet_image, self.player.rect.midtop))
+                    self.player.shoot_cooldown = 0
 
         # Check bullet-enemy collision
         enemy_killed = pygame.sprite.groupcollide(self.enemy_group, self.player_bullet_group, True, True)
         if enemy_killed:
             self.player.hit_enemy = True
+            settings.enemies_stop = True
 
         if self.player.hit_enemy:
             self.player.score += 100
             self.player.hit_enemy = False
+
+        # Stops enemies for a while when they are shot
+        if settings.enemies_stop:
+            self.enemies_stop_timer += timer
+            if self.enemies_stop_timer >= 500:
+                settings.enemies_stop = False
+                self.enemies_stop_timer = 0
 
         # Check bullet-wall collision
         pygame.sprite.groupcollide(self.wall_group, self.player_bullet_group, True, True)
@@ -260,7 +272,6 @@ class Play:
             settings.enemy_animation_cooldown = 20
 
         # Update
-        timer = clock.get_time()
         self.player_group.update(keys)
         self.enemy_group.update(timer, self.enemy_bullet_group)
         self.player_bullet_group.update()
