@@ -210,7 +210,7 @@ class Play:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.game_state_manager.set_state("main_menu")
-                if event.key == pygame.K_SPACE and self.player.shoot_cooldown >= 350 and not settings.enemies_stop:
+                if event.key == pygame.K_SPACE and self.player.shoot_cooldown >= 200 and not settings.enemies_stop:
                     self.player_bullet_group.add(PlayerBullet(bullet_image, self.player.rect.midtop))
                     self.player.shoot_cooldown = 0
 
@@ -229,7 +229,7 @@ class Play:
         # Stops enemies for a while when they are shot
         if settings.enemies_stop:
             self.enemies_stop_timer += timer
-            if self.enemies_stop_timer >= 350:
+            if self.enemies_stop_timer >= 250:
                 settings.enemies_stop = False
                 self.enemies_stop_timer = 0
 
