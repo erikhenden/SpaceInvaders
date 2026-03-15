@@ -1,3 +1,5 @@
+import time
+
 import pygame
 
 from entities.bullet import PlayerBullet
@@ -17,6 +19,7 @@ screen = pygame.display.set_mode(settings.SIZE)
 clock = pygame.time.Clock()
 font_main_menu = pygame.font.SysFont("consolas", 42)
 font_ui = pygame.font.SysFont("consolas", 20)
+font_dead = pygame.font.SysFont("consolas", 80)
 
 
 # Load player image
@@ -142,6 +145,8 @@ class Play:
         self.game_state_manager = game_state_manager
         self.enemies_stop_timer = 0
         self.explosion_group = []
+        self.dead_timer = 0
+        self.player_dead = False
 
         # Groups
         self.player_group = pygame.sprite.Group()
@@ -246,6 +251,18 @@ class Play:
 
         # Check bullet-bullet collision
         pygame.sprite.groupcollide(self.player_bullet_group, self.enemy_bullet_group, True, False)
+
+        # Check player-enemy collision
+        player_dead = pygame.sprite.groupcollide(self.player_group, self.enemy_group, True, False)
+        if player_dead:
+            self.player_dead = True
+
+        # If player dead: show "DEAD" text for 2 sec and quit game
+        if self.player_dead:
+            draw_text(settings.WIDTH // 2-80, settings.HEIGHT // 2-30, "GAME OVER", pygame.Color("red"), font_dead)
+            self.dead_timer += timer
+            if self.dead_timer >= 2000:
+                self.game_state_manager.set_state("quit")
 
         if self.player.hit:
             if self.player.lives == 1:  # Game over

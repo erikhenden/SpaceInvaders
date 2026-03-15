@@ -19,6 +19,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.x -= self.speed
         if keys[pygame.K_d]:  # Move right
             self.rect.x += self.speed
+        if keys[pygame.K_w]: self.rect.y -= self.speed
 
         # Check edge collision
         if self.rect.x <= 0:
