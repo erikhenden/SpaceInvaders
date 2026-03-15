@@ -1,2 +1,1 @@
-An attempt to remake space invaders
-Unpolished
+# An attempt to remake space invaders
